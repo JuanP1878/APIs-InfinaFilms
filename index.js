@@ -116,6 +116,37 @@ app.get("/catalogoComentario", (req, resp) => {
     });
 });
 
+/*  API QUE ENVÍA CORREO ELECTRONICO    */
+
+app.post("/email", (req, resp) => {
+  //Sacar los valores de req.body para guardarlos en variables aplicando destructuración
+  const {email,cont, name, subject} = req.body;
+
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: "infinafilms@gmail.com",
+      pass: "contraperrona",
+    },
+  });
+
+  const mailOptions = {
+    from: "infinafilms@gmail.com",
+    to: "eduardogorostiola@gmail.com", //Aquí va el correo del administrador al que le va a llegar el corero
+    subject: subject,
+    text: `Nombre: ${name} \nEmail: ${email}\nContenido: ${cont}`,
+  };
+
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log(error);
+    } else {
+        resp.status(200).send({message: 'El email ha sido enviado'});
+    }
+  });
+});
+
 app.listen(port, () => {
   console.log("Listening in port " + port);
 });
+
